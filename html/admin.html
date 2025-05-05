@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <header>
+    <h1>IERG4210 Shopping Website</h1>
+  </header>
+
+  <nav>
+    <div class="shopping-list-container">
+      <button class="shopping-list-nametag">
+        Shopping List
+      </button>
+
+      <div class="shopping-list">
+        <h3>Shopping List</h3>
+        <form id="paypal-form" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+          <input type="hidden" name="cmd" value="_cart">
+          <input type="hidden" name="upload" value="1">
+          <input type="hidden" name="business" value="sb-rbbmt40742598@business.example.com"> 
+          <input type="hidden" name="charset" value="utf-8">
+          <input type="hidden" name="currency_code" value="HKD">
+          <input type="hidden" name="invoice" id="invoice" value="">
+          <input type="hidden" name="custom" id="custom" value="">
+          <input type="hidden" name="return" value="http://localhost:3001/html/index.html?payment=success">
+          <input type="hidden" name="cancel_return" value="http://localhost:3001/html/index.html">
+          <input type="hidden" name="notify_url" value="https://tame-hounds-visit.loca.lt/api/paypal-webhook">
+          <ul id="cart-items"></ul>
+          <p id="result-message"></p>
+          <p id="cart-total">Total: $0.00</p>
+          <button type="button" id="checkout-button">Checkout with PayPal</button>
+        </form>
+      </div>
+    </div>
+
+    <ul  class="navigation">
+      <li><a href="admin.html">Admin Panel</a></li>
+    </ul>
+
+    <button class="admin-panel-nametag" id="login-button">
+      <a href="admin.html">Admin Panel/Logout</a>
+    </button>
+
+    <button class="chat-nametag" onclick="toggleChat()">
+      <a href="#" onclick="return false;">Customer Service</a>
+    </button>
+
+    <div class="user" id="user-display">Guest</div>
+  </nav>
+
+  <nav>
+    <ul class="category" id="category-list">
+
+    </ul>
+  </nav>
+
+  <h1 class="adminFormTitle">Admin Panel</h1>
+  <input type="hidden" name="_csrf" id="csrf-token-change">
+  <button type="button" class="admin-logoutButton" id="admin-logout-button" onclick="logout()">Logout</button>
+
+  <h2 class="adminFormSubTitles">Add Category</h2>
+
+  <form action="http://localhost:3000/adminAddCategory" method="POST" class="adminForm">
+    <input type="hidden" name="_csrf" id="csrf-token-add-category">
+
+    <label for="name">Category Name:</label>
+    <input type="text" name="name" required pattern="[A-Za-z0-9\s]{1,50}" title="Only letters, numbers, and spaces (max 50 characters)"></br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <h2 class="adminFormSubTitles">Edit Category</h2>
+
+  <form action="http://localhost:3000/adminEditCategory" method="POST" class="adminForm">
+    <input type="hidden" name="_csrf" id="csrf-token-edit-category">
+    
+    <label for="product">Category:</label>
+    <select name="catid" id="category-edit-select" required>
+      <option value="">Select Category</option>
+    </select></br></br>
+
+    <label for="name">Category Name:</label>
+    <input type="text" name="name" required pattern="[A-Za-z0-9\s]{1,50}" title="Only letters, numbers, and spaces (max 50 characters)"></br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <h2 class="adminFormSubTitles">Delete Category</h2>
+
+  <form action="http://localhost:3000/adminDeleteCategory" method="POST" class="adminForm">
+    <input type="hidden" name="_csrf" id="csrf-token-delete-category">
+    
+    <label for="product">Category:</label>
+    <select name="catid" id="category-delete-select" required>
+      <option value="">Select Category</option>
+    </select></br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <h2 class="adminFormSubTitles">Add Product</h2>
+
+  <form action="http://localhost:3000/adminAddProduct" method="POST" enctype="multipart/form-data" class="adminForm">
+    <input type="hidden" name="_csrf" id="csrf-token-add-product">
+    
+    <label for="category">Category:</label>
+    <select name="catid" id="category-add-select" required>
+      <option value="">Select Category</option>
+    </select></br></br>
+
+    <label for="name">Product Name:</label>
+    <input type="text" name="name" required pattern="[A-Za-z0-9\s]{1,50}" title="Only letters, numbers, and spaces (max 50 characters)"></br></br>
+
+    <label for="price">Price:</label>
+    <input type="number" name="price" required min="0" step="0.01" title="Price must be a positive number"></br></br>
+
+    <label for="description">Description:</label>
+    <textarea name="description" maxlength="1000"></textarea></br></br>
+
+    <label for="image">Upload Image:</label>
+    <input type="file" id="image1" name="image1" accept="image/jpeg, image/gif, image/png" onchange="validateImage('image1','error-message1')"></br>
+    <div class="drop-zone" id="drop-zone-add" ondrop="handleDrop(event, 'image1', 'error-message1')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+      Drag and drop an image here or click to select
+      <div id="thumbnail-add"></div>
+    </div>
+    <div class="error-message" id="error-message1"></div>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <h2 class="adminFormSubTitles">Edit Product</h2>
+
+  <form action="http://localhost:3000/adminEditProduct" method="POST" enctype="multipart/form-data" class="adminForm">
+    <input type="hidden" name="_csrf" id="csrf-token-edit-product">
+    
+    <label for="product">Product:</label>
+    <select name="pid" id="product-edit-select" required>
+      <option value="">Select Product</option>
+    </select></br></br>
+
+    <label for="name">Product Name:</label>
+    <input type="text" name="name" required pattern="[A-Za-z0-9\s]{1,50}" title="Only letters, numbers, and spaces (max 50 characters)"></br></br>
+
+    <label for="price">Price:</label>
+    <input type="number" name="price" required min="0" step="0.01" title="Price must be a positive number"></br></br>
+
+    <label for="description">Description:</label>
+    <textarea name="description" maxlength="500"></textarea></br></br>
+
+    <label for="image">Upload Image:</label>
+    <input type="file" id="image2" name="image2" accept="image/jpeg, image/gif, image/png" onchange="validateImage('image2','error-message2')"></br>
+    <div class="drop-zone" id="drop-zone-edit" ondrop="handleDrop(event, 'image2', 'error-message2')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+      Drag and drop an image here or click to select
+      <div id="thumbnail-edit"></div>
+    </div>
+    <div class="error-message" id="error-message2"></div>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <h2 class="adminFormSubTitles">Delete Product</h2>
+
+  <form action="http://localhost:3000/adminDeleteProduct" method="POST" class="adminForm">
+    <input type="hidden" name="_csrf" id="csrf-token-delete-product">
+    
+    <label for="product">Product:</label>
+    <select name="pid" id="product-delete-select" required>
+      <option value="">Select Product</option>
+    </select></br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+
+  <h2 class="adminFormSubTitles">Chat History</h2>
+
+  <table id="chat-history-table" class="adminForm">
+    <thead>
+      <tr>
+        <th>Message ID</th>
+        <th>Username</th>
+        <th>User Message</th>
+        <th>AI Response</th>
+        <th>Date & Time</th>
+      </tr>
+    </thead>
+    <tbody id="chat-history-table-body"></tbody>
+  </table>
+
+
+  <h2 class="adminFormSubTitles">Orders</h2>
+  
+  <table id="orders-table" class="adminForm">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>User Email</th>
+        <th>Products</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Date & Time</th>
+      </tr>
+    </thead>
+    <tbody id="orders-table-body"></tbody>
+  </table>
+
+  <div class="chat-container" id="chat-container">
+    <div class="chat-header">
+        AI Customer Service
+    </div>
+    <div class="chat-messages" id="chat-messages">
+        <div class="message ai-message">
+            Welcome to IERG4210 Shopping Website AI Customer Service Chat Room! How can I assist you today?
+        </div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>@LEE Sze-man 1155193157</p>
+    <p>All photo is downloaded from the New Balance and Nike Website</p>
+  </footer>
+
+  <script src="listScript.js"></script>
+  <script src="loginScript.js"></script>
+  <script src="paymentScript.js"></script>
+
+  <script>
+    // Fetch CSRF tokens for forms
+    window.addEventListener('load', ()=> {
+      fetch('http://localhost:3000/csrf-token', { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('csrf-token-add-category').value = data.csrfToken;
+          document.getElementById('csrf-token-edit-category').value = data.csrfToken;
+          document.getElementById('csrf-token-delete-category').value = data.csrfToken;
+          document.getElementById('csrf-token-add-product').value = data.csrfToken;
+          document.getElementById('csrf-token-edit-product').value = data.csrfToken;
+          document.getElementById('csrf-token-delete-product').value = data.csrfToken;
+          document.getElementById('csrf-token-change').value = data.csrfToken;
+        });
+    });
+
+    document.getElementById('drop-zone-add').addEventListener('click', () => {
+      document.getElementById('image1').click();
+    });
+    document.getElementById('drop-zone-edit').addEventListener('click', () => {
+      document.getElementById('image2').click();
+    });
+  </script>
+
+</body>
+</html>

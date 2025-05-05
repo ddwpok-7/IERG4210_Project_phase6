@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IERG4210 Shopping Website</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <header>
+    <h1>IERG4210 Shopping Website</h1>
+  </header>
+
+  <nav>
+    <div class="shopping-list-container">
+      <button class="shopping-list-nametag">
+        Shopping List
+      </button>
+      
+      <div class="shopping-list">
+        <h3>Shopping List</h3>
+        <form id="paypal-form" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+          <input type="hidden" name="cmd" value="_cart">
+          <input type="hidden" name="upload" value="1">
+          <input type="hidden" name="business" value="sb-rbbmt40742598@business.example.com"> 
+          <input type="hidden" name="charset" value="utf-8">
+          <input type="hidden" name="currency_code" value="HKD">
+          <input type="hidden" name="invoice" id="invoice" value="">
+          <input type="hidden" name="custom" id="custom" value="">
+          <input type="hidden" name="return" value="http://localhost:3001/html/index.html?payment=success">
+          <input type="hidden" name="cancel_return" value="http://localhost:3001/html/index.html">
+          <input type="hidden" name="notify_url" value="https://tame-hounds-visit.loca.lt/api/paypal-webhook">
+          <ul id="cart-items"></ul>
+          <p id="result-message"></p>
+          <p id="cart-total">Total: $0.00</p>
+          <button type="button" id="checkout-button">Checkout with PayPal</button>
+        </form>
+      </div>
+    </div>
+
+    <ul class="navigation" id="navigation-path">
+
+    </ul>
+
+    <button class="admin-panel-nametag" id="login-button">
+      <a href="login.html"></a>
+    </button>
+
+    <button class="chat-nametag" onclick="toggleChat()">
+      <a href="#" onclick="return false;">Customer Service</a>
+    </button>
+
+    <div class="user" id="user-display"></div>
+  </nav>
+
+  <nav>
+    <ul class="category" id="category-list">
+
+    </ul>
+  </nav>
+
+  <main>
+    <section class="products">
+      <h2>Products</h2>
+      <div class="product-list" id="product-list">
+
+      </div>
+    </section>
+  </main>
+
+  <div class="chat-container" id="chat-container">
+    <div class="chat-header">
+        AI Customer Service
+    </div>
+    <div class="chat-messages" id="chat-messages">
+        <div class="message ai-message">
+            Welcome to IERG4210 Shopping Website AI Customer Service Chat Room! How can I assist you today?
+        </div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>@LEE Sze-man 1155193157</p>
+    <p>All photo is downloaded from the New Balance and Nike Website</p>
+  </footer>
+
+
+  <!-- Modal for payment confirmation -->
+  <div id="payment-modal" class="modal">
+    <div class="modal-content">
+      <h2>Payment Successful</h2>
+      <p>Thank you for your purchase! Your payment has been processed successfully.</p>
+      <button id="continue-button" onclick="closeModal()">Continue Shopping</button>
+    </div>
+  </div>
+
+
+  <script src="listScript.js"></script>
+  <script src="paymentScript.js"></script>
+
+</body>
+</html>
